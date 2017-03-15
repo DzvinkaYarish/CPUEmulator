@@ -9,6 +9,10 @@ import java.util.Stack;
 
 //TODO: ask about separate operations for ALU, commands of type c...(can be 3 commands for jump, change and add+ im value)
 //TODO: make zero all flags after execution of each instrcution or what?
+//TODO: ask about exceptions
+
+
+//TODO:  ADD OVERFLOWS OPTIONS IN ARYTHMETIC
 
 
 /**
@@ -395,6 +399,7 @@ public class EU {
         registers[parsedParams[0]] = registers[parsedParams[1]] + registers[parsedParams[2]];
     }
     protected void addi(String params) {
+
         short[] parsedParams  = instParser.parseRItype(params);
         registers[parsedParams[0]] = registers[parsedParams[1]] + parsedParams[2];
     }
@@ -450,24 +455,29 @@ public class EU {
     protected void shl(String params) {  // Think about carry reg
         byte[] parsedParams = instParser.parseInRegisterOperation(params);
         registers[parsedParams[0]] = registers[parsedParams[0]] >>> 1;
+        System.out.println("shl");
     }
     protected void shr(String params) {
         byte[] parsedParams = instParser.parseInRegisterOperation(params);
-        int res = registers[parsedParams[0]] << 1;
-        registers[parsedParams[0]] = Integer.parseInt(Integer.toBinaryString(res).substring(1), 2);
+
+        registers[parsedParams[0]] = registers[parsedParams[0]] << 1;
+        System.out.println("shr");
     }
     protected void ror(String params) {
         byte[] parsedParams = instParser.parseInRegisterOperation(params);
         int lsb = registers[parsedParams[0]] % 2;
-        int res = registers[parsedParams[0]] >> 1;
-        registers[parsedParams[0]] = Integer.parseInt(Integer.toString(lsb)
-                                                            + Integer.toBinaryString(res).substring(1), 2);
+        int res = registers[parsedParams[0]];
+        int len = Integer.toBinaryString(res).length();
+        registers[parsedParams[0]] = Integer.parseInt(
+                Integer.toBinaryString(res).charAt(lsb) + Integer.toBinaryString(res).substring(0, len - 2), 2);
+        System.out.println("ror");
     }
     protected void rol(String params) {
         byte[] parsedParams = instParser.parseInRegisterOperation(params);
-        int res = registers[parsedParams[0]] << 1;
-        registers[parsedParams[0]] = Integer.parseInt(Integer.toBinaryString(res).charAt(0)
-                                                            + Integer.toBinaryString(res).substring(1), 2);
+        int res = registers[parsedParams[0]];
+        registers[parsedParams[0]] = Integer.parseInt(Integer.toBinaryString(res).substring(1) +
+                Integer.toBinaryString(res).charAt(0), 2);
+        System.out.println("rol");
     }
 
     /**

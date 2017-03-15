@@ -8,6 +8,7 @@ import instructimplement.InstructionMap;
 
 /**
  * Created by dzvinka on 27.02.17.
+ *
  */
 public class Main {
 
@@ -16,7 +17,7 @@ public class Main {
            "jle", "jlei",  "jler", "jleri", "jne", "jnei", "jner", "jneri",
            "call", "calli", "callr", "callri", "syscall", "ret",
            "add", "sub", "mul", "div", "and", "xor", "nand", "or",
-            "addi", "subi", "muli", "divi", "shl", "shr", "rol", "ror"};
+            "addi", "subi", "muli", "divi", "shl", "shr", "ror", "rol"};
 
 
 
@@ -41,10 +42,10 @@ public class Main {
 
 
         //while(true) {
-        eu1.execute("0010 0000 00010 00001 00000 000000001");
-        eu1.execute("0010 0000 00010 00001 00000 000000001");
-        System.out.println(eu1.getRegisters()[2]);
-        System.out.println(eu1.getRegisters()[3]);
+        //eu1.execute("0010 0000 00010 00001 00000 000000001");
+        eu1.execute("0010 1011 00000 00001 00000 000000001");
+        System.out.println(eu1.getRegisters()[0]);
+        System.out.println(Integer.toBinaryString(eu1.getRegisters()[0]));
 
 
         //System.out.println(eu1.getRegisters()[2]);
