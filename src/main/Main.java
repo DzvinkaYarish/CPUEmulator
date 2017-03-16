@@ -3,7 +3,7 @@ package main;
 import cpus.EU;
 import instructimplement.InstructionMap;
 
-
+import java.util.Scanner;
 
 
 /**
@@ -38,18 +38,22 @@ public class Main {
         eu1.setInstTable(im);
         eu1.getRegisters()[0] = 14;
         eu1.getRegisters()[1] = 15;
-        System.out.println(eu1.getInstTable().getInstruction((byte)30));
+        eu1.getRegisters()[2] = 1 + 1057281;
 
-
-        //while(true) {
+        Scanner input = new Scanner(System.in);
+        int i = 0;
+        while(i < 100) {
         //eu1.execute("0010 0000 00010 00001 00000 000000001");
-        eu1.execute("0010 1011 00000 00001 00000 000000001");
-        System.out.println(eu1.getRegisters()[0]);
-        System.out.println(Integer.toBinaryString(eu1.getRegisters()[0]));
+            //eu1.execute("0010 1011 00000 00001 00000 000000001");
+            String inst = input.nextLine();
+            eu1.execute(inst);
+            System.out.println(eu1.showRegisters());
+            System.out.println(eu1.showRAM());
+            i++;
 
 
-        //System.out.println(eu1.getRegisters()[2]);
-        //}
+
+        }
 
     }
 }

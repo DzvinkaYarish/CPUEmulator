@@ -67,6 +67,9 @@ public class EU {
      */
     public void execute(String instruction) {
         instruction = instruction.replaceAll("\\s","");
+        if (instruction.length() != 32) {
+            System.out.println("TOO SHORT/ LONG INSTRUCTION");
+        }
         byte opcode = Byte.parseByte(instruction.substring(0, 8), 2);
         try {
             instTable.getInstruction(opcode).invoke(this, instruction.substring(8));
@@ -92,6 +95,7 @@ public class EU {
     protected void lw(String params) {
         byte [] parsedParams = instParser.parseLoadStoretype(params);
         registers[parsedParams[0]] = RAM[addrToArrIndex(registers[parsedParams[1]])];
+        System.out.println("lw");
     }
 
     /**
@@ -104,12 +108,13 @@ public class EU {
     }
 
     /**
-     * Stores a word from a register raddr1 to RAM at the address stored in register raddr2
+     * Stores a word from a register raddr2 to RAM at the address stored in register raddr1
      * @param params 24 binary string with all necessary arguments and info for instruction execution
      */
     protected void sw(String params) {
         byte [] parsedParams = instParser.parseLoadStoretype(params);
-        RAM[addrToArrIndex(registers[parsedParams[0]])] = registers[parsedParams[1]];
+        RAM[addrToArrIndex(registers[parsedParams[1]])] = registers[parsedParams[0]];
+        System.out.println("sw");
     }
 
     /**
@@ -128,6 +133,7 @@ public class EU {
     protected void seti(String params) { //Stores sign extended value of val to the $t register
         short[] parsedParams = instParser.parseLoadStoretypeImValue(params);
         registers[parsedParams[0]] = parsedParams[1];
+        System.out.println("seti");
     }
     //==============================================Branching===========================================================
 
@@ -138,6 +144,7 @@ public class EU {
     protected void jmp(String params) {
         byte[] parsedParams = instParser.parseBtypeOnlyJump(params);
         registers[29] = registers[parsedParams[1]];
+        System.out.println("jmp");
     }
 
     /**
@@ -158,6 +165,7 @@ public class EU {
     protected void jmr(String params) {
         byte[] parsedParams = instParser.parseBtypeOnlyJump(params);
         registers[29] += registers[parsedParams[1]];
+        System.out.println("jmr");
 
     }
 
@@ -168,6 +176,7 @@ public class EU {
     protected void jmri(String params) {
         short[] parsedParams = instParser.parseBtypeOnlyJumpImValue(params);
         registers[29] += parsedParams[1];
+        System.out.println("jmri");
     }
 
     /**
@@ -180,6 +189,7 @@ public class EU {
         if (registers[parsedParams[1]] == registers[parsedParams[2]]) {
             registers[29] = registers[28] + registers[parsedParams[3]];
         }
+        System.out.println("jme");
     }
 
     /**
@@ -193,6 +203,7 @@ public class EU {
         if (registers[parsedParams[1]] == registers[parsedParams[2]]) {
             registers[29] = registers[28] + parsedParams[3];
         }
+        System.out.println("jmei");
     }
 
     /**
@@ -205,6 +216,7 @@ public class EU {
         if (registers[parsedParams[1]] == registers[parsedParams[2]]) {
             registers[29] += registers[parsedParams[3]];
         }
+        System.out.println("jmer");
     }
 
     /**
@@ -217,6 +229,7 @@ public class EU {
         if (registers[parsedParams[1]] == registers[parsedParams[2]]) {
             registers[29] += parsedParams[3];
         }
+        System.out.println("jmeri");
     }
 
     /**
@@ -229,6 +242,7 @@ public class EU {
         if (registers[parsedParams[1]] != registers[parsedParams[2]]) {
             registers[29] = registers[28] + registers[parsedParams[3]];
         }
+        System.out.println("jne");
     }
 
     /**
@@ -241,6 +255,7 @@ public class EU {
         if (registers[parsedParams[1]] != registers[parsedParams[2]]) {
             registers[29] = registers[28] + parsedParams[3];
         }
+        System.out.println("jnei");
     }
 
     /**
@@ -253,6 +268,7 @@ public class EU {
         if (registers[parsedParams[1]] != registers[parsedParams[2]]) {
             registers[29] += registers[parsedParams[3]];
         }
+        System.out.println("jner");
     }
 
     /**
@@ -265,6 +281,7 @@ public class EU {
         if (registers[parsedParams[1]] != registers[parsedParams[2]]) {
             registers[29] += parsedParams[3];
         }
+        System.out.println("jneri");
     }
 
     /**
@@ -277,6 +294,7 @@ public class EU {
         if (registers[parsedParams[1]] <= registers[parsedParams[2]]) {
             registers[29] = registers[parsedParams[3]];
         }
+        System.out.println("jle");
     }
 
     /**
@@ -289,6 +307,7 @@ public class EU {
         if (registers[parsedParams[1]] <= registers[parsedParams[2]]) {
             registers[29] = parsedParams[3];
         }
+        System.out.println("jlei");
     }
 
     /**
@@ -301,6 +320,7 @@ public class EU {
         if (registers[parsedParams[1]] <= registers[parsedParams[2]]) {
             registers[29] = registers[28] + registers[parsedParams[3]];
         }
+        System.out.println("jler");
 
     }
 
@@ -314,6 +334,7 @@ public class EU {
         if (registers[parsedParams[1]] <= registers[parsedParams[2]]) {
             registers[29] = registers[28] + parsedParams[3];
         }
+        System.out.println("jleri");
     }
 
     /**
@@ -327,6 +348,7 @@ public class EU {
         stk.push(registers[29]);
         registers[31] += 1;
         registers[29] = registers[28] + registers[parsedParams[1]];
+        System.out.println("call");
     }
 
     /**
@@ -340,6 +362,7 @@ public class EU {
         stk.push(registers[29]);
         registers[31] += 1;
         registers[29] = registers[28] + parsedParams[1];
+        System.out.println("calli");
     }
 
     /**
@@ -352,6 +375,7 @@ public class EU {
         stk.push(registers[29]);
         registers[31] += 1;
         registers[29] += registers[parsedParams[1]];
+        System.out.println("callr");
     }
 
     /**
@@ -364,6 +388,7 @@ public class EU {
         stk.push(registers[29]);
         registers[31] += 1;
         registers[29] += parsedParams[1];
+        System.out.println("callri");
     }
 
     /**
@@ -374,6 +399,7 @@ public class EU {
     protected void syscall(String params) {
         registers[27] = registers[29];
         registers[29] = 4609; //TODO:  WHAT DOES THAT ADDRESS MEAN EXACTLY?????
+        System.out.println("syscall");
     }
 
     /**
@@ -384,6 +410,7 @@ public class EU {
     protected void ret(String params) {
         registers[29] = registers[28] + stk.pop();
         registers[31] -= 1;
+        System.out.println("ret");
     }
 
 
@@ -396,59 +423,97 @@ public class EU {
 
     protected void add(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
-        registers[parsedParams[0]] = registers[parsedParams[1]] + registers[parsedParams[2]];
+        long res = (long)registers[parsedParams[1]] + (long)registers[parsedParams[2]];
+        if (res > Integer.MAX_VALUE || res < Integer.MIN_VALUE) {
+            registers[parsedParams[0]] = Integer.parseInt(Long.toBinaryString(res).substring(1), 2);
+            registers[30] = registers[30] | (1 << 26);
+
+        } else {
+            registers[parsedParams[0]] = registers[parsedParams[1]] + registers[parsedParams[2]];
+        }
+        System.out.println("add");
     }
     protected void addi(String params) {
 
         short[] parsedParams  = instParser.parseRItype(params);
-        registers[parsedParams[0]] = registers[parsedParams[1]] + parsedParams[2];
+        long res = (long)registers[parsedParams[1]] + (long)parsedParams[2];
+        if (res > Integer.MAX_VALUE || res < Integer.MIN_VALUE) {
+            registers[parsedParams[0]] = Integer.parseInt(Long.toBinaryString(res).substring(1), 2);
+            registers[30] = registers[30] | (1 << 26);
+        } else {
+            registers[parsedParams[0]] = registers[parsedParams[1]] + parsedParams[2];
+        }
+        System.out.println("addi");
     }
 
     protected void sub(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
-        registers[parsedParams[0]] = registers[parsedParams[1]] - registers[parsedParams[2]];
+        long res = (long)registers[parsedParams[1]] - (long)registers[parsedParams[2]];
+        if (res > Integer.MAX_VALUE || res < Integer.MIN_VALUE) {
+            registers[parsedParams[0]] = Integer.parseInt(Long.toBinaryString(res).substring(1), 2);
+            registers[30] = registers[30] | (1 << 26);
+        } else {
+            registers[parsedParams[0]] = registers[parsedParams[1]] - registers[parsedParams[2]];
+        }
+        System.out.println("sub");
     }
     protected void subi(String params) {
         short[] parsedParams  = instParser.parseRItype(params);
-        registers[parsedParams[0]] = registers[parsedParams[1]] - parsedParams[2];
+        long res = (long)registers[parsedParams[1]] - (long)parsedParams[2];
+        if (res > Integer.MAX_VALUE || res < Integer.MIN_VALUE) {
+            registers[parsedParams[0]] = Integer.parseInt(Long.toBinaryString(res).substring(1), 2);
+            registers[30] = registers[30] | (1 << 26);
+        } else {
+            registers[parsedParams[0]] = registers[parsedParams[1]] - parsedParams[2];
+        }
+        System.out.println("subi");
+
     }
     protected void mul(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
         long res = registers[parsedParams[1]] * registers[parsedParams[2]];
         registers[parsedParams[0] + 1] = (int)(res & 0x00000000FFFFFFFFL);
         registers[parsedParams[0]] = (int)(res & 0xFFFFFFFF00000000L);
+        System.out.println("mul");
     }
     protected void muli(String params) {
         short[] parsedParams  = instParser.parseRItype(params);
         long res = registers[parsedParams[1]] * parsedParams[2];
         registers[parsedParams[0] + 1] = (int)(res & 0x00000000FFFFFFFFL);
         registers[parsedParams[0]] = (int)(res & 0xFFFFFFFF00000000L);
+        System.out.println("muli");
     }
     protected void div(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
         registers[parsedParams[0]] = registers[parsedParams[1]] / registers[parsedParams[2]];
+        System.out.println("div");
     }
     protected void divi(String params) {
         short[] parsedParams  = instParser.parseRItype(params);
         registers[parsedParams[0]] = registers[parsedParams[1]] / parsedParams[2];
+        System.out.println("divi");
     }
     //============================================Logical operations====================================================
 
     protected void and(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
         registers[parsedParams[0]] = registers[parsedParams[1]] & registers[parsedParams[2]];
+        System.out.println("and");
     }
     protected void or(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
         registers[parsedParams[0]] = registers[parsedParams[1]] | registers[parsedParams[2]];
+        System.out.println("or");
     }
     protected void xor(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
         registers[parsedParams[0]] = registers[parsedParams[1]] ^ registers[parsedParams[2]];
+        System.out.println("xor");
     }
     protected void nand(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
         registers[parsedParams[0]] = ~(registers[parsedParams[1]] & registers[parsedParams[2]]);
+        System.out.println("nand");
     }
 
     //===========================================Shift operations=======================================================
@@ -487,16 +552,20 @@ public class EU {
      */
     protected void cmp(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
-        registers[parsedParams[0]] = registers[parsedParams[1]] - registers[parsedParams[2]];
-        if (registers[parsedParams[1]] == registers[parsedParams[2]]) {
-            registers[30] = registers[30] | (1 << 25);
-        } else if (registers[parsedParams[1]] <= registers[parsedParams[2]]) {
-            registers[30] = registers[30] | (1 << 24);
-        } else if (registers[parsedParams[1]] - registers[parsedParams[2]] > Integer.MAX_VALUE ||
-                registers[parsedParams[1]] - registers[parsedParams[2]] < Integer.MIN_VALUE) {
+        long res = (long)registers[parsedParams[1]] - (long)registers[parsedParams[2]];
+        if (res > Integer.MAX_VALUE || res < Integer.MIN_VALUE) {
+            registers[parsedParams[0]] = Integer.parseInt(Long.toBinaryString(res).substring(1), 2);
             registers[30] = registers[30] | (1 << 26);
-        }
 
+        } else {
+            registers[parsedParams[0]] = registers[parsedParams[1]] - registers[parsedParams[2]];
+            if (registers[parsedParams[1]] == registers[parsedParams[2]]) {
+                registers[30] = registers[30] | (1 << 25);
+            } else if (registers[parsedParams[1]] <= registers[parsedParams[2]]) {
+                registers[30] = registers[30] | (1 << 24);
+            }
+        }
+        System.out.println("cmp");
     }
 
 
@@ -504,18 +573,27 @@ public class EU {
 
 
 
-
-
-
-
-
-
-
-
-
-
+//===================================================Auxiliary methods==================================================
     protected int addrToArrIndex(int addr) { //TODO:
         return addr - RAM_OFFSET;
     }
+    public String showRegisters() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 32; i++) {
+            String temp = "$r" + i + ": " + registers[i] + "\n";
+            sb.append(temp);
+        }
+        return sb.toString();
+    }
+
+    public String showRAM() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < RAM.length; i++) {
+            String temp = "memory addr 0x" + (Integer.toHexString(i + RAM_OFFSET)) + ": " + RAM[i] + "\n";
+            sb.append(temp);
+        }
+        return sb.toString();
+    }
+
 
 }
