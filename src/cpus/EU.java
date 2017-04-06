@@ -9,11 +9,11 @@ import java.util.Stack;
 
 //TODO: ask about separate operations for ALU, commands of type c...(can be 3 commands for jump, change and add+ im value)
 //TODO: make zero all flags after execution of each instrcution or what?
-//TODO: ask about exceptions
-
-
-//TODO:  ADD OVERFLOWS OPTIONS IN ARYTHMETIC
-
+//TODO: ask about exception
+//TODO: same opcodes for rr, different for ri
+// can't have 4 diff 1 byte values in 1 register
+// we don't have parallel fetching
+// add + 8 to get next command with starting address in PC()
 
 /**
  * Created by dzvinka on 26.02.17.
@@ -38,6 +38,10 @@ public class EU {
 
     private static final int RAM_OFFSET = 1057281;
     protected InstructionMap instTable = new InstructionMap();
+
+
+
+    protected InstructionMap ALUInstructs = new InstructionMap();
     protected InstructionParser instParser = new InstructionParser();
 
     public EU(int[] RAM) {
@@ -60,6 +64,8 @@ public class EU {
     public void setInstTable(InstructionMap instTable) {
         this.instTable = instTable;
     }
+    public void setALUInstructs(InstructionMap ALUInstructs) { this.ALUInstructs = ALUInstructs;}
+
 
     /**
      * execute an instruction, based on its opcode
@@ -76,10 +82,17 @@ public class EU {
         } catch (IllegalAccessException|InvocationTargetException ex) {
 
             if (ex.getCause().getClass().equals(IllegalArgumentException.class)) {
-                System.out.println("Illegal arguments were passed to" + instTable.getInstruction(opcode).getName());
-            }else if (ex.getCause().getClass().equals(IndexOutOfBoundsException.class)) {
+                System.out.println("Illegal arguments were passed to" + instTable.getInstruction(opcode).getName());}else if (ex.getCause().getClass().equals(IndexOutOfBoundsException.class)) {
                 System.out.println("Invalid main RAM/register address in " + instTable.getInstruction(opcode).getName());
             }
+        }
+    }
+
+    public void executeALU(String instruction, byte ALUopcode) {
+        try {
+        ALUInstructs.getInstruction(ALUopcode).invoke(this, instruction);
+        } catch (IllegalAccessException|InvocationTargetException ex) {
+            System.out.println("NOT VALID OPCODE");
         }
     }
 
@@ -100,7 +113,7 @@ public class EU {
 
     /**
      * Loads one byte from RAM at the ad-
-     * dress maddr to the 8 most significant bits of register raddr.
+     * dress maddr to the 8 least significant bits of register raddr.
      * @param params 24 binary string with all necessary arguments and info for instruction execution
      */
     protected void lb(String params) { //TODO: think about it
@@ -398,7 +411,7 @@ public class EU {
      */
     protected void syscall(String params) {
         registers[27] = registers[29];
-        registers[29] = 4609; //TODO:  WHAT DOES THAT ADDRESS MEAN EXACTLY?????
+        registers[29] = 4609; //start address of interuption handler for syscalls
         System.out.println("syscall");
     }
 
@@ -413,13 +426,57 @@ public class EU {
         System.out.println("ret");
     }
 
+   //=============================================BranchingBuffers======================================================
+    protected void jmp_t1(String binaryString) {
+        if (binaryString.substring(17, 20).equals("001")) {
+            jme(binaryString.substring(8));
+        } else if (binaryString.substring(17, 20).equals("010")) {
+            jle(binaryString.substring(8));
+        } else {
+            jne(binaryString.substring(8));
+        }
+    }
 
+    protected void jmp_t2(String binaryString) {
+        if (binaryString.substring(17, 20).equals("001")) {
+            jmei(binaryString.substring(8));
+        } else if (binaryString.substring(17, 20).equals("010")) {
+            jlei(binaryString.substring(8));
+        } else {
+            jnei(binaryString.substring(8));
+        }
+    }
 
+    protected void jmp_t3(String binaryString) {
+        if (binaryString.substring(17, 20).equals("001")) {
+            jmer(binaryString.substring(8));
+        } else if (binaryString.substring(17, 20).equals("010")) {
+            jler(binaryString.substring(8));
+        } else {
+            jner(binaryString.substring(8));
+        }
+    }
 
+    protected void jmp_t4(String binaryString) {
+        if (binaryString.substring(17, 20).equals("001")) {
+            jmeri(binaryString.substring(8));
+        } else if (binaryString.substring(17, 20).equals("010")) {
+            jleri(binaryString.substring(8));
+        } else {
+            jneri(binaryString.substring(8));
+        }
+    }
 
 
 
     //============================================Integer arithmetic====================================================
+
+    protected void alu(String params) {
+        byte[] parsedParams = instParser.parseInstructForALU(params);
+        executeALU(params, parsedParams[0]);
+        System.out.println("ALU");  
+    }
+
 
     protected void add(String params) {
         byte[] parsedParams = instParser.parseRRtype(params);
@@ -550,7 +607,7 @@ public class EU {
      * and set corresponding flags: Zero, Negative or Overflow
      * @param params 24 binary string with all necessary arguments and info for instruction execution
      */
-    protected void cmp(String params) {
+    protected void cmp(String params) { //TODO: add updates for all flags
         byte[] parsedParams = instParser.parseRRtype(params);
         long res = (long)registers[parsedParams[1]] - (long)registers[parsedParams[2]];
         if (res > Integer.MAX_VALUE || res < Integer.MIN_VALUE) {

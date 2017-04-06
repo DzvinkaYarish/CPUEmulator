@@ -11,7 +11,7 @@ public class InstructionParser {
         //TODO: check whether byte normally converts binstring
         params[1] = Byte.parseByte(binString.substring(5, 10), 2); //source r 1
         params[2] = Byte.parseByte(binString.substring(10, 15), 2);//source r 2
-        params[3] = Byte.parseByte(binString.substring(15, 19), 2);  //ALU/FPU operation
+        params[3] = Byte.parseByte(binString.substring(15, 20), 2);  //ALU/FPU operation
         params[4] = Byte.parseByte(binString.substring(23), 2);  //mark if the next instruction depends on the
         //result of this or previous ones.
 
@@ -117,11 +117,19 @@ public class InstructionParser {
     public byte[] parseInRegisterOperation(String binString) {
         binString = binString.replaceAll("\\s","");
         byte[] params = new byte[2];
-        params[0] = params[0] = Byte.parseByte(binString.substring(0, 5), 2);
+        params[0] = Byte.parseByte(binString.substring(0, 5), 2);
         params[1] = Byte.parseByte(binString.substring(23), 2);  //mark if the next instruction depends on the
         //result of this or previous ones.
         return params;
     }
+
+    public byte[] parseInstructForALU(String binString) {
+        byte [] params = new byte[1];
+        params[0] = Byte.parseByte(binString.substring(15, 20), 2); //ALU operation
+        return params;
+    }
+
+
 
     //ToDo: decide whether right parser for only one instruction - compare?
 

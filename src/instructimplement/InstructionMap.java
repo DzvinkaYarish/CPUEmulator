@@ -14,4 +14,7 @@ public class InstructionMap {
     public Method getInstruction(byte opcode) {
         return instructionTable.get(opcode);
     }
+    public int size() {
+        return instructionTable.size();
+    }
 }
