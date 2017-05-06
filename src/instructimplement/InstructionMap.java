@@ -7,11 +7,11 @@ import java.util.HashMap;
  * Created by dzvinka on 26.02.17.
  */
 public class InstructionMap {
-    private HashMap<Byte, Method> instructionTable= new HashMap<>();
-    public void addInstruction(byte opcode, Method action) {
+    private HashMap<Integer, Method> instructionTable= new HashMap<>();
+    public void addInstruction(int opcode, Method action) {
         instructionTable.put(opcode, action);
     }
-    public Method getInstruction(byte opcode) {
+    public Method getInstruction(int opcode) {
         return instructionTable.get(opcode);
     }
     public int size() {

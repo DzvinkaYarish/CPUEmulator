@@ -10,10 +10,10 @@ import java.util.ArrayList;
  */
 public class Helper {
 
-    public ArrayList<Integer> readFile(String filename) {
+    public ArrayList<Long> readFile(String filename) {
         BufferedReader br = null;
         FileReader fr = null;
-        ArrayList<Integer> arl = new ArrayList<>();
+        ArrayList<Long> arl = new ArrayList<>();
 
         try {
 
@@ -25,9 +25,9 @@ public class Helper {
             br = new BufferedReader(new FileReader(filename));
 
             while ((sCurrentLine = br.readLine()) != null) {
-                System.out.println(sCurrentLine);
-                arl.add(Integer.parseInt(sCurrentLine.substring(0, 32), 2));
-                arl.add(Integer.parseInt(sCurrentLine.substring(32), 2));
+               // System.out.println(sCurrentLine);
+                arl.add(Long.valueOf(sCurrentLine.substring(0, 32), 2));
+               // arl.add(Long.valueOf(sCurrentLine.substring(32), 2));
             }
 
         } catch (IOException e) {
@@ -49,8 +49,8 @@ public class Helper {
         return arl;
     }
 
-    public  String intToBinString(int n) {
-        String binStr = Integer.toBinaryString(n);
+    public String intToBinString(long n) {
+        String binStr = Long.toBinaryString(n);
         while (binStr.length() < 32) {
 
             binStr = '0' + binStr;
